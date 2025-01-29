@@ -8,6 +8,9 @@ namespace YourNamespace.Data
         public MovieDbContext(DbContextOptions<MovieDbContext> options)
             : base(options)
         {
+            Movies = Set<MovieModel>();
+            Actors = Set<ActorModel>();
+            MovieRatings = Set<MovieRatingModel>();
         }
 
         public DbSet<MovieModel> Movies { get; set; }

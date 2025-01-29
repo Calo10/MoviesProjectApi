@@ -11,8 +11,8 @@ using YourNamespace.Data;
 namespace movies_project_api.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20250129060940_AddMovieActorRelationship")]
-    partial class AddMovieActorRelationship
+    [Migration("20250129073808_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

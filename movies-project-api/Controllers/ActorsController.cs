@@ -85,7 +85,9 @@ namespace YourNamespace.Controllers
         public async Task<IActionResult> AssignActorToMovie(int actorId, int movieId)
         {
             var actor = await _context.Actors.FindAsync(actorId);
-            var movie = await _context.Movies.FindAsync(movieId);
+            var movie = await _context.Movies
+                .Include(m => m.Actors)
+                .FirstOrDefaultAsync(m => m.Id == movieId);
 
             if (actor == null || movie == null)
             {

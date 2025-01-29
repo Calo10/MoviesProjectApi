@@ -1,11 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using YourNamespace.Data;  // Replace YourNamespace with your actual namespace
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using YourNamespace.Filters;  // Add this line
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add this near the top to change the port
 builder.WebHost.UseUrls("http://localhost:5000");  // Or any other port number
+
+// Add CORS before other services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -27,24 +43,11 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.ApiKey,
         Name = "X-API-Key",
         In = ParameterLocation.Header,
-        Description = "API Key authentication using the 'X-API-Key' header"
+        Description = "API Key required for create, update, and delete operations"
     });
 
-    // Make sure all endpoints use the API Key
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "ApiKey"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+    // Only require API key for POST, PUT, and DELETE operations
+    c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 var app = builder.Build();
@@ -58,6 +61,9 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // This makes Swagger UI the root page
     });
 }
+
+// Add this after Swagger and before other middleware
+app.UseCors("AllowAll");
 
 app.UseStaticFiles();
 

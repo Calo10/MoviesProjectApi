@@ -104,7 +104,7 @@ namespace YourNamespace.Controllers
                 return NotFound("Movie not found");
             }
 
-            return movie.Actors;
+            return movie.Actors.ToList();
         }
     }
 } 
